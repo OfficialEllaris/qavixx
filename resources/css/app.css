@@ -3,7 +3,97 @@
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
+/* Default to dark mode for the entire application */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-heading: 'Orbitron', ui-sans-serif, system-ui, sans-serif;
+
+    /* Qavixx Brand Colors - Upgraded to True OLED Black/Slate */
+    --color-qavixx-base: #050505;       /* OLED deep black */
+    --color-qavixx-surface: #0a0a0a;    /* Dark ash surface */
+    --color-qavixx-surface-light: #141414; /* Ash surface for cards */
+    --color-qavixx-surface-hover: #1f1f1f;
+    
+    /* Rich Metallic Copper */
+    --color-qavixx-copper-light: #f5c898;
+    --color-qavixx-copper: #e2a154;
+    --color-qavixx-copper-dark: #b6742b;
+    --color-qavixx-copper-darker: #824f19;
+
+    /* Gradients */
+    --background-image-gradient-brand: linear-gradient(135deg, var(--color-qavixx-copper-darker) 0%, var(--color-qavixx-copper-dark) 40%, var(--color-qavixx-copper) 80%, var(--color-qavixx-copper-light) 100%);
+    --background-image-gradient-brand-hover: linear-gradient(135deg, var(--color-qavixx-copper-dark) 0%, var(--color-qavixx-copper) 40%, var(--color-qavixx-copper-light) 80%, #ffffff 100%);
+    --background-image-gradient-surface: linear-gradient(180deg, var(--color-qavixx-surface) 0%, var(--color-qavixx-base) 100%);
+    --background-image-gradient-glass-border: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 100%);
+    
+    /* Animations */
+    --animate-float: float 6s ease-in-out infinite;
+    --animate-pulse-slow: pulse-slow 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    --animate-marquee: marquee 30s linear infinite;
+    
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    @keyframes pulse-slow {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 0.6; transform: scale(1.05); }
+    }
+    
+    @keyframes marquee {
+        0% { transform: translateX(0%); }
+        100% { transform: translateX(-100%); }
+    }
+}
+
+@layer base {
+    body {
+        @apply bg-qavixx-base text-gray-400 antialiased selection:bg-qavixx-copper selection:text-black;
+        /* Subtle noise texture base */
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        @apply font-heading text-white tracking-wide leading-tight;
+    }
+}
+
+@layer utilities {
+    .glass-panel, .glass-panel-interactive {
+        @apply bg-white/[0.02] backdrop-blur-xl backdrop-saturate-[1.5] shadow-[0_8px_30px_rgb(0,0,0,0.5)];
+        position: relative;
+    }
+    
+    /* Elegant 1px border gradient mask for glass panels */
+    .glass-panel::before, .glass-panel-interactive::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        padding: 1px;
+        background: var(--background-image-gradient-glass-border);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+    }
+    
+    .glass-panel-interactive {
+        @apply transition-all duration-500 hover:bg-white/[0.04] hover:shadow-[0_20px_40px_rgba(226,161,84,0.05)];
+    }
+    
+    .glass-panel-interactive:hover::before {
+        background: linear-gradient(180deg, rgba(226, 161, 84, 0.3) 0%, rgba(255, 255, 255, 0.02) 100%);
+    }
+
+    .text-gradient-brand {
+        @apply bg-gradient-brand bg-clip-text text-transparent;
+    }
+    
+    .ambient-glow {
+        @apply absolute rounded-full blur-[100px] pointer-events-none mix-blend-screen;
+    }
 }
